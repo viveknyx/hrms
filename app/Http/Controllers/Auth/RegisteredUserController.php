@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\EmployeeProfile;
+use App\Models\Role;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
@@ -39,7 +41,16 @@ class RegisteredUserController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'role_id' => Role::where('slug', 'employee')->value('id'),
+            'employee_code' => 'EMP'.now()->format('ymd').random_int(100, 999),
+            'status' => 'active',
             'password' => Hash::make($request->password),
+        ]);
+
+        EmployeeProfile::create([
+            'user_id' => $user->id,
+            'joining_date' => now()->toDateString(),
+            'employment_type' => 'Full-time',
         ]);
 
         event(new Registered($user));

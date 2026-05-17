@@ -2,9 +2,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="handheldfriendly" content="true" />
 <meta name="MobileOptimized" content="width" />
-<meta name="description" content="Mordenize" />
-<meta name="author" content="" />
-<meta name="keywords" content="Mordenize" />
+<meta name="description" content="PeopleOps HRMS" />
+<meta name="author" content="PeopleOps HRMS" />
+<meta name="keywords" content="hrms, employees, payroll, attendance, leave management" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <!--  Favicon -->
 <link rel="shortcut icon" type="image/png" href="{{ asset('assets/images/favicon.ico') }}" />

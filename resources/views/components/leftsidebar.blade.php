@@ -1,93 +1,58 @@
+@php
+    $user = auth()->user();
+    $links = [
+        ['label' => 'Dashboard', 'route' => 'dashboard', 'icon' => 'ti ti-layout-dashboard', 'permission' => 'dashboard.view'],
+        ['label' => 'Employees', 'route' => 'employees.index', 'icon' => 'ti ti-users', 'permission' => 'employees.view'],
+        ['label' => 'Departments', 'route' => 'departments.index', 'icon' => 'ti ti-building', 'permission' => 'departments.manage'],
+        ['label' => 'Attendance', 'route' => 'attendance.index', 'icon' => 'ti ti-clock-hour-4', 'permission' => 'attendance.view'],
+        ['label' => 'Leave', 'route' => 'leaves.index', 'icon' => 'ti ti-calendar-time', 'permission' => 'leave.view'],
+        ['label' => 'Payroll', 'route' => 'payroll.index', 'icon' => 'ti ti-cash', 'permission' => 'payroll.view'],
+        ['label' => 'Announcements', 'route' => 'announcements.index', 'icon' => 'ti ti-speakerphone', 'permission' => 'announcements.view'],
+        ['label' => 'Roles', 'route' => 'roles.index', 'icon' => 'ti ti-shield-lock', 'permission' => 'roles.manage'],
+    ];
+@endphp
+
 <aside class="left-sidebar">
-    <!-- Sidebar scroll-->
     <div>
-        <div class="brand-logo d-flex align-items-center justify-content-between">
-            <a href="{{ url('dashboard') }}" class="text-nowrap logo-img">
-                <img src="{{ asset('https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/logos/dark-logo.svg') }}"
-                    class="dark-logo" width="180" alt="" />
-                <img src="{{ asset('https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/logos/light-logo.svg') }}"
-                    class="light-logo" width="180" alt="" />
+        <div class="brand-logo d-flex align-items-center justify-content-between px-4 py-3">
+            <a href="{{ route('dashboard') }}" class="text-nowrap logo-img text-decoration-none">
+                <span class="fw-bolder fs-6 text-primary">PeopleOps</span>
+                <span class="fw-semibold text-dark ms-1">HRMS</span>
             </a>
             <div class="close-btn d-lg-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
                 <i class="ti ti-x fs-8 text-muted"></i>
             </div>
         </div>
-        <!-- Sidebar navigation-->
         <nav class="sidebar-nav scroll-sidebar" data-simplebar>
             <ul id="sidebarnav">
-                <!-- ============================= -->
-                <!-- Home -->
-                <!-- ============================= -->
                 <li class="nav-small-cap">
                     <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                    <span class="hide-menu">Home</span>
+                    <span class="hide-menu">Workspace</span>
                 </li>
-                <!-- =================== -->
-                <!-- Dashboard -->
-                <!-- =================== -->
-                <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ url('dashboard') }}" aria-expanded="false">
-                        <span>
-                            <i class="ti ti-aperture"></i>
-                        </span>
-                        <span class="hide-menu">Dashboard</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ url('projects') }}" aria-expanded="false">
-                        <span>
-                            <i class="ti ti-file-code"></i>
-                        </span>
-                        <span class="hide-menu">Projects</span>
-                    </a>
-                </li>
-                @if (auth()->user()->role === 1)
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="{{ url('users') }}" aria-expanded="false">
-                            <span>
-                                <i class="ti ti-user-circle"></i>
-                            </span>
-                            <span class="hide-menu">Users</span>
-                        </a>
-                    </li>
-                @endif
-                <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ url('groups') }}" aria-expanded="false">
-                        <span>
-                            <i class="ti ti-users"></i>
-                        </span>
-                        <span class="hide-menu">Groups</span>
-                    </a>
-                </li>
-                @if (auth()->user()->role === 1)
-                <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ url('activity') }}" aria-expanded="false">
-                        <span>
-                            <i class="ti ti-speakerphone"></i>
-                        </span>
-                        <span class="hide-menu">Activity</span>
-                    </a>
-                </li>
-                @endif
+                @foreach ($links as $link)
+                    @if ($user?->hasPermission($link['permission']))
+                        <li class="sidebar-item">
+                            <a class="sidebar-link {{ request()->routeIs($link['route']) ? 'active' : '' }}"
+                                href="{{ route($link['route']) }}" aria-expanded="false">
+                                <span><i class="{{ $link['icon'] }}"></i></span>
+                                <span class="hide-menu">{{ $link['label'] }}</span>
+                            </a>
+                        </li>
+                    @endif
+                @endforeach
             </ul>
         </nav>
-        <div class="fixed-profile p-3 bg-light-secondary rounded sidebar-ad mt-3">
+        <div class="fixed-profile p-3 bg-light-secondary rounded sidebar-ad mt-3 mx-3">
             <div class="hstack gap-3">
-                <div class="john-img">
-                    <img src="../../dist/images/profile/user-1.jpg" class="rounded-circle" width="40" height="40"
-                        alt="">
+                <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-semibold"
+                    style="width:40px;height:40px;background:{{ $user->avatar_color ?? '#2563eb' }}">
+                    {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
                 </div>
-                <div class="john-title">
-                    <h6 class="mb-0 fs-4 fw-semibold">Mathew</h6>
-                    <span class="fs-2 text-dark">Designer</span>
+                <div class="john-title overflow-hidden">
+                    <h6 class="mb-0 fs-3 fw-semibold text-truncate">{{ $user->name }}</h6>
+                    <span class="fs-2 text-dark text-truncate d-block">{{ $user->role->name ?? 'Employee' }}</span>
                 </div>
-                <button class="border-0 bg-transparent text-primary ms-auto" tabindex="0" type="button"
-                    aria-label="logout" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="logout">
-                    <i class="ti ti-power fs-6"></i>
-                </button>
             </div>
         </div>
-        <!-- End Sidebar navigation -->
     </div>
-    <!-- End Sidebar scroll-->
 </aside>
