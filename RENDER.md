@@ -24,7 +24,7 @@ LOG_CHANNEL=stderr
 SESSION_DRIVER=file
 CACHE_DRIVER=file
 QUEUE_CONNECTION=sync
-RUN_MIGRATIONS=true
+RUN_MIGRATIONS=false
 CACHE_LARAVEL=true
 ```
 
@@ -73,8 +73,10 @@ DB_PASSWORD=your-password
 DB_SSLMODE=require
 ```
 
-The container runs `php artisan migrate --force` on startup when `RUN_MIGRATIONS=true`.
+The container runs `php artisan migrate --force` on startup only when `RUN_MIGRATIONS=true`.
 It does not run seeders automatically in production.
+
+For this project, keep `RUN_MIGRATIONS=false` on Render after you have already migrated and seeded Supabase locally.
 
 Use `SESSION_DRIVER=file` unless you add Laravel's sessions table migration.
 
