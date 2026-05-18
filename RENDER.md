@@ -36,19 +36,19 @@ php artisan key:generate --show
 
 ## Database
 
-For Supabase, use the PostgreSQL connection details from your Supabase project settings:
+For Supabase on Render, use the PostgreSQL pooler connection details from your Supabase project settings. The direct host (`db.your-project-ref.supabase.co`) can fail on Render with `Network unreachable` because it may resolve to IPv6.
 
 ```text
 DB_CONNECTION=pgsql
-DB_HOST=db.your-project-ref.supabase.co
-DB_PORT=5432
+DB_HOST=your-supabase-pooler-host
+DB_PORT=6543
 DB_DATABASE=postgres
-DB_USERNAME=postgres
+DB_USERNAME=postgres.your-project-ref
 DB_PASSWORD=your-supabase-database-password
 DB_SSLMODE=require
 ```
 
-If you use Supabase's transaction pooler instead of the direct connection, use the pooler host, username, password, and port from Supabase. Keep `DB_CONNECTION=pgsql` and `DB_SSLMODE=require`.
+In Supabase, copy this from **Project Settings -> Database -> Connection string -> Transaction pooler**. Keep `DB_CONNECTION=pgsql` and `DB_SSLMODE=require`.
 
 For a MySQL database, set:
 

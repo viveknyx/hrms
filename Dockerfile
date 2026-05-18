@@ -40,8 +40,8 @@ RUN npm ci && npm run build && rm -rf node_modules
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
+    && chmod -R ug+rwX /var/www/html/storage \
+    && chmod -R ug+rwX /var/www/html/bootstrap/cache
 
 # Copy nginx config
 COPY docker/nginx.conf /etc/nginx/nginx.conf
