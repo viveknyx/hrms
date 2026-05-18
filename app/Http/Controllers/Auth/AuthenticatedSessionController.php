@@ -31,7 +31,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->user()->forceFill(['last_login_at' => now()])->save();
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        return redirect()->route('dashboard');
     }
 
     /**

@@ -17,6 +17,10 @@ Route::get('/', function () {
         : view('auth.login');
 })->name('home');
 
+Route::get('/https:/dashboard', function () {
+    return redirect()->route('dashboard');
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardController::class)
         ->middleware('permission:dashboard.view')
