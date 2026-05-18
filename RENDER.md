@@ -20,7 +20,7 @@ APP_DEBUG=false
 APP_KEY=base64:your-generated-key
 APP_URL=https://your-service-name.onrender.com
 LOG_CHANNEL=stderr
-SESSION_DRIVER=database
+SESSION_DRIVER=file
 CACHE_DRIVER=file
 QUEUE_CONNECTION=sync
 RUN_MIGRATIONS=true
@@ -59,3 +59,5 @@ DB_PASSWORD=your-password
 
 The container runs `php artisan migrate --force` on startup when `RUN_MIGRATIONS=true`.
 It does not run seeders automatically in production.
+
+Use `SESSION_DRIVER=file` unless you add Laravel's sessions table migration.

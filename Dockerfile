@@ -8,29 +8,14 @@ COPY public ./public
 COPY vite.config.js postcss.config.js tailwind.config.js ./
 RUN npm run build
 
-FROM composer:2 AS vendor
-
-WORKDIR /app
-COPY composer.json composer.lock ./
-RUN composer install \
-    --no-dev \
-    --no-interaction \
-    --no-progress \
-    --prefer-dist \
-    --optimize-autoloader \
-    --no-scripts \
-    --ignore-platform-req=ext-pdo_mysql \
-    --ignore-platform-req=ext-pdo_pgsql
-COPY app ./app
-COPY database ./database
-RUN composer dump-autoload --no-dev --optimize --no-scripts
-
 FROM php:8.2-cli-bookworm
 
 WORKDIR /var/www/html
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        git \
+        curl \
         libpq-dev \
         libzip-dev \
         unzip \
@@ -38,9 +23,18 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 COPY . .
-COPY --from=vendor /app/vendor ./vendor
 COPY --from=assets /app/public/build ./public/build
+
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --no-progress \
+    --prefer-dist \
+    --optimize-autoloader \
+    --no-scripts
 
 RUN mkdir -p \
         storage/app/public \
