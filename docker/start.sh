@@ -1,20 +1,15 @@
-#!/usr/bin/env sh
-set -eu
+#!/bin/sh
 
-PORT="${PORT:-10000}"
+# Run migrations
+php artisan migrate --force
 
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
+# Clear and cache config for production
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 
-if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
-    php artisan migrate --force
-fi
+# Start PHP-FPM in background
+php-fpm -D
 
-if [ "${CACHE_LARAVEL:-true}" = "true" ]; then
-    php artisan config:cache
-    php artisan route:cache
-    php artisan view:cache
-fi
-
-php artisan serve --host=0.0.0.0 --port="$PORT"
+# Start nginx in foreground
+nginx -g "daemon off;"

@@ -1,54 +1,53 @@
-FROM node:20-bookworm AS assets
+FROM php:8.2-fpm-alpine
 
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY resources ./resources
-COPY public ./public
-COPY vite.config.js postcss.config.js tailwind.config.js ./
-RUN npm run build
+# Install system dependencies
+RUN apk add --no-cache \
+    nginx \
+    nodejs \
+    npm \
+    curl \
+    zip \
+    unzip \
+    git \
+    libpng-dev \
+    libzip-dev \
+    oniguruma-dev
 
-FROM php:8.2-cli-bookworm
+# Install PHP extensions
+RUN docker-php-ext-install \
+    pdo_mysql \
+    mbstring \
+    zip \
+    gd \
+    bcmath
 
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Set working directory
 WORKDIR /var/www/html
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        git \
-        curl \
-        libpq-dev \
-        libzip-dev \
-        unzip \
-    && docker-php-ext-install pdo_mysql pdo_pgsql zip \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
+# Copy project files
 COPY . .
-COPY --from=assets /app/public/build ./public/build
 
-RUN composer install \
-    --no-dev \
-    --no-interaction \
-    --no-progress \
-    --prefer-dist \
-    --optimize-autoloader \
-    --no-scripts
+# Install PHP dependencies (no dev, optimized)
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-RUN mkdir -p \
-        storage/app/public \
-        storage/framework/cache/data \
-        storage/framework/sessions \
-        storage/framework/testing \
-        storage/framework/views \
-        storage/framework/hrms-views \
-        storage/logs \
-        bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache docker/start.sh
+# Install and build frontend assets
+RUN npm ci && npm run build && rm -rf node_modules
 
-RUN php artisan package:discover --ansi
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache
 
-EXPOSE 10000
+# Copy nginx config
+COPY docker/nginx.conf /etc/nginx/nginx.conf
 
-CMD ["sh", "docker/start.sh"]
+# Start script
+COPY docker/start.sh /start.sh
+RUN chmod +x /start.sh
+
+EXPOSE 80
+
+CMD ["/start.sh"]
