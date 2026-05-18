@@ -19,6 +19,7 @@ APP_ENV=production
 APP_DEBUG=false
 APP_KEY=base64:your-generated-key
 APP_URL=https://your-service-name.onrender.com
+FORCE_HTTPS=true
 LOG_CHANNEL=stderr
 SESSION_DRIVER=file
 CACHE_DRIVER=file

@@ -11,11 +11,13 @@ RUN apk add --no-cache \
     git \
     libpng-dev \
     libzip-dev \
-    oniguruma-dev
+    oniguruma-dev \
+    postgresql-dev
 
 # Install PHP extensions
 RUN docker-php-ext-install \
     pdo_mysql \
+    pdo_pgsql \
     mbstring \
     zip \
     gd \
